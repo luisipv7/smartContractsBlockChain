@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birth Certificate</title>
+  </head>
+  <body>
+    <h1>Create Birth Certificate</h1>
+    <form id="createForm">
+      <label>Name:</label>
+      <input type="text" id="name" required /><br />
+      <label>Date of Birth:</label>
+      <input type="text" id="dateOfBirth" required /><br />
+      <label>Place of Birth:</label>
+      <input type="text" id="placeOfBirth" required /><br />
+      <label>Parents:</label>
+      <input type="text" id="parents" required /><br />
+      <button type="submit">Create Certificate</button>
+    </form>
+
+    <h1>Get Birth Certificate</h1>
+    <form id="getForm">
+      <label>Certificate ID:</label>
+      <input type="number" id="certId" required /><br />
+      <button type="submit">Get Certificate</button>
+    </form>
+
+    <div id="certificate"></div>
+
+    <script>
+      document
+        .getElementById('createForm')
+        .addEventListener('submit', async function (event) {
+          event.preventDefault();
+          const name = document.getElementById('name').value;
+          const dateOfBirth = document.getElementById('dateOfBirth').value;
+          const placeOfBirth = document.getElementById('placeOfBirth').value;
+          const parents = document.getElementById('parents').value;
+
+          const response = await fetch('/graphql', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              query: `
+                    mutation {
+                        createCertificate(
+                            name: "${name}",
+                            date_of_birth: "${dateOfBirth}",
+                            place_of_birth: "${placeOfBirth}",
+                            parents: "${parents}"
+                        ) {
+                            success
+                            transaction_hash
+                        }
+                    }`,
+            }),
+          });
+
+          const result = await response.json();
+          alert(
+            'Certificate created with transaction hash: ' +
+              result.data.createCertificate.transaction_hash
+          );
+        });
+
+      document
+        .getElementById('getForm')
+        .addEventListener('submit', async function (event) {
+          event.preventDefault();
+          const certId = document.getElementById('certId').value;
+
+          const response = await fetch('/graphql', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              query: `
+                    query {
+                        get_certificate(id: ${certId}) {
+                            name
+                            dateOfBirth
+                            placeOfBirth
+                            parents
+                        }
+                    }`,
+            }),
+          });
+
+          const result = await response.json();
+          document.getElementById('certificate').innerText = JSON.stringify(
+            result.data.get_certificate,
+            null,
+            2
+          );
+        });
+    </script>
+  </body>
+</html>

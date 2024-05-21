@@ -38,7 +38,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"data\",\"type\":\"uint256\"}],\"name\":\"DataStored\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"getData\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_data\",\"type\":\"uint256\"}],\"name\":\"setData\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/SimpleStorage.sol\":\"SimpleStorage\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/SimpleStorage.sol\":{\"keccak256\":\"0x35e3a655432c896ca8af4caf58e478bfab818900f45a2c2575005436c3377765\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://85aa0ffa640834a468b0c0e5a7b2f62de14fab62173d73c639328e1bfede37b9\",\"dweb:/ipfs/Qmf2AQhFYQerjNxRXCMctfRwszYNbEp7ZqbgCzkxVTZGTR\"]}},\"version\":1}",
@@ -990,9 +991,17 @@
     "name": "solc",
     "version": "0.8.0+commit.c7dfd78e.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1716329332358": {
+      "events": {},
+      "links": {},
+      "address": "0xBb8C6E9490176d6ACAF9fa75d1Ada5201F2e8975",
+      "transactionHash": "0x81336b61340f58e6e167060221461f61a1eb2e96d7ca6a23a39dcc8fe63b307c"
+    }
+  },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-05-15T23:08:04.121Z",
+  "updatedAt": "2024-05-21T22:09:10.637Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

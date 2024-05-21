@@ -16,48 +16,60 @@ if not web3.is_connected():
 account = web3.eth.accounts[0]
 
 # Carregar o ABI e o endereço do contrato
-with open('build/contracts/SimpleStorage.json') as f:
+with open('build/contracts/BirthCertificate.json') as f:
     contract_data = json.load(f)
 
 abi = contract_data['abi']
-contract_address = '0xDF28a2D057770178d7927E09Fc0A8dce77445673' #contract_data['networks']['1715813714482']['address']  # Usar o endereço correto do contrato
+contract_address = '0xBb8C6E9490176d6ACAF9fa75d1Ada5201F2e8975'  # Atualize isso com o endereço do contrato implantado
 
 # Criar uma instância do contrato
 contract = web3.eth.contract(address=contract_address, abi=abi)
 
 # Definir a chave privada (garanta que ela está em formato hexadecimal)
-PRIVATE_KEY = '0x11e7172cbfd145ae3565bebbfb16a64e96ac179a7c807aba9bad4c6de429412f'  # Atualize isso com sua chave privada do Ganache
+PRIVATE_KEY = '0xYourPrivateKeyHere'  # Atualize isso com sua chave privada
 
 # Definir o Schema do GraphQL
 class Query(graphene.ObjectType):
-    get_data = graphene.Int()
+    get_certificate = graphene.Field(
+        graphene.JSONString,
+        id=graphene.Int(required=True)
+    )
 
-    def resolve_get_data(self, info):
-        return contract.functions.getData().call()
+    def resolve_get_certificate(self, info, id):
+        cert = contract.functions.getCertificate(id).call()
+        return {
+            'name': cert[0],
+            'dateOfBirth': cert[1],
+            'placeOfBirth': cert[2],
+            'parents': cert[3]
+        }
 
-class SetData(graphene.Mutation):
+class CreateCertificate(graphene.Mutation):
     class Arguments:
-        data = graphene.Int(required=True)
+        name = graphene.String(required=True)
+        date_of_birth = graphene.String(required=True)
+        place_of_birth = graphene.String(required=True)
+        parents = graphene.String(required=True)
 
     success = graphene.Boolean()
+    transaction_hash = graphene.String()
 
-    def mutate(self, info, data):
-        # Construir a transação
-        txn = contract.functions.setData(data).build_transaction({
+    def mutate(self, info, name, date_of_birth, place_of_birth, parents):
+        txn = contract.functions.createCertificate(
+            name, date_of_birth, place_of_birth, parents).build_transaction({
             'from': account,
             'nonce': web3.eth.get_transaction_count(account),
             'gas': 2000000,
             'gasPrice': web3.to_wei('20', 'gwei')
         })
 
-        # Assinar a transação
         signed_txn = web3.eth.account.sign_transaction(txn, private_key=PRIVATE_KEY)
         tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
         web3.eth.wait_for_transaction_receipt(tx_hash)
-        return SetData(success=True)
+        return CreateCertificate(success=True, transaction_hash=tx_hash.hex())
 
 class Mutation(graphene.ObjectType):
-    set_data = SetData.Field()
+    create_certificate = CreateCertificate.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
 

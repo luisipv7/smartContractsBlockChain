@@ -1,17 +1,50 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract SimpleStorage {
-    uint256 private data;
-
-    event DataStored(uint256 indexed data);
-
-    function setData(uint256 _data) public {
-        data = _data;
-        emit DataStored(_data);
+contract BirthCertificate {
+    struct Certificate {
+        string name;
+        string dateOfBirth;
+        string placeOfBirth;
+        string parents;
     }
 
-    function getData() public view returns (uint256) {
-        return data;
+    mapping(uint256 => Certificate) private certificates;
+    uint256 private nextId = 1;
+    address public owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function createCertificate(
+        string memory name,
+        string memory dateOfBirth,
+        string memory placeOfBirth,
+        string memory parents
+    ) public onlyOwner returns (uint256) {
+        certificates[nextId] = Certificate(
+            name,
+            dateOfBirth,
+            placeOfBirth,
+            parents
+        );
+        nextId++;
+        return nextId - 1;
+    }
+
+    function getCertificate(
+        uint256 id
+    )
+        public
+        view
+        returns (string memory, string memory, string memory, string memory)
+    {
+        Certificate memory cert = certificates[id];
+        return (cert.name, cert.dateOfBirth, cert.placeOfBirth, cert.parents);
     }
 }
